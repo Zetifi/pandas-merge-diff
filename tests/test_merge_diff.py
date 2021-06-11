@@ -58,7 +58,7 @@ FRAME_B = pd.DataFrame(
 
 def test_merge_diff():
     keys = ["key1", "key2"]
-    results = pandas_merge_diff.merge_diff(FRAME_A, FRAME_B, keys=keys)
+    results = pandas_merge_diff.merge_diff(FRAME_A, FRAME_B, keys=["key1", "key2"])
     assert_frame_equal(
         results,
         pd.DataFrame(
@@ -71,17 +71,24 @@ def test_merge_diff():
                     "action": "identical",
                 },
                 {
-                    "key1": "FFAA",
-                    "key2": "FFBB",
-                    "email": "c@zetifi.com",
-                    "name": "CM",
-                    "action": "new",
-                },
-                {
                     "key1": "BBCC",
                     "key2": "BBCC",
                     "email": "m@zetifi.com",
                     "name": "Mik Warnakulasuriya Patabendige Ushantha Joseph Chaminda Vaas",
+                    "action": "new",
+                },
+                {
+                    "key1": "FFAA",
+                    "key2": "CCFF",
+                    "email": "c@zetifi.com",
+                    "name": "CM",
+                    "action": "deleted",
+                },
+                {
+                    "key1": "FFAA",
+                    "key2": "FFBB",
+                    "email": "c@zetifi.com",
+                    "name": "CM",
                     "action": "new",
                 },
                 {
@@ -91,15 +98,6 @@ def test_merge_diff():
                     "name": "Mik Warnakulasuriya Patabendige Ushantha Joseph Chaminda Vaas",
                     "action": "changed",
                 },
-                {
-                    "key1": "FFAA",
-                    "key2": "CCFF",
-                    "email": "c@zetifi.com",
-                    "name": "CM",
-                    "action": "deleted",
-                },
             ]
-        )
-        .sort_values(by=keys)
-        .reset_index(drop=True),
+        ),
     )

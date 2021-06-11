@@ -3,18 +3,20 @@ import pandas as pd
 SUFFIXES = {"a": "_a", "b": "_b"}
 
 
-def merge_diff(a: pd.DataFrame, b: pd.DataFrame, keys) -> pd.DataFrame:
+def merge_diff(
+    compare: pd.DataFrame, reference: pd.DataFrame, keys: list
+) -> pd.DataFrame:
     # Assert frames are the same shape
-    assert list(a.columns.values) == list(b.columns.values)
-    assert list(a.dtypes.values) == list(b.dtypes.values)
+    assert list(compare.columns.values) == list(reference.columns.values)
+    assert list(compare.dtypes.values) == list(reference.dtypes.values)
 
-    columns = list(a.columns.values)
+    columns = list(compare.columns.values)
 
     map_columns = {column + SUFFIXES["a"]: column for column in columns}
     map_keys = {column + SUFFIXES["a"]: column for column in keys}
 
-    deleted_df = b.merge(
-        a,
+    deleted_df = reference.merge(
+        compare,
         how="outer",
         indicator=True,
         left_on=keys,
@@ -27,8 +29,8 @@ def merge_diff(a: pd.DataFrame, b: pd.DataFrame, keys) -> pd.DataFrame:
     deleted_df = deleted_df[columns]
     deleted_df["action"] = "deleted"
 
-    identical_df = a.merge(
-        b,
+    identical_df = compare.merge(
+        reference,
         how="inner",
         indicator=True,
         left_on=columns,
@@ -40,8 +42,8 @@ def merge_diff(a: pd.DataFrame, b: pd.DataFrame, keys) -> pd.DataFrame:
     identical_df = identical_df[columns]
     identical_df["action"] = "identical"
 
-    new_df = a.merge(
-        b,
+    new_df = compare.merge(
+        reference,
         how="outer",
         indicator=True,
         left_on=keys,
@@ -53,8 +55,8 @@ def merge_diff(a: pd.DataFrame, b: pd.DataFrame, keys) -> pd.DataFrame:
     new_df = new_df[columns]
     new_df["action"] = "new"
 
-    changed_df = a.merge(
-        b,
+    changed_df = compare.merge(
+        reference,
         how="inner",
         indicator=True,
         left_on=keys,
